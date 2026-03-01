@@ -17,11 +17,7 @@
         <label for="sidebar-toggle" class="drawer-overlay"></label>
         <aside class="bg-base-100 border-r border-base-300 w-64 min-h-screen flex flex-col">
 
-            {{-- User Info --}}
-            <div class="px-5 py-4 border-b border-base-300">
-                <div class="font-semibold truncate">{{ Auth::user()->name }}</div>
-                <div class="font-semibold truncates text-sm">{{ ucfirst(Auth::user()->role) }}</div>
-            </div>
+            {{-- Brand --}}
 
             {{-- Navigation --}}
             <nav class="flex-1 px-3 py-4">
@@ -78,19 +74,16 @@
                             </a>
                         </li>
                     @endif
+
+                    <li class="menu-title mt-3 text-xs uppercase tracking-wider opacity-50">Akun</li>
+                    <li>
+                        <a href="{{ route('profile') }}" class="{{ request()->routeIs('profile') ? 'active' : '' }}">
+                            <i class="bi bi-person-circle"></i>
+                            Profil
+                        </a>
+                    </li>
                 </ul>
             </nav>
-
-            {{-- Logout --}}
-            <div class="px-3 py-4 border-t border-base-300">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="btn btn-ghost btn-sm w-full justify-start gap-2">
-                        <i class="bi bi-box-arrow-left"></i>
-                        Logout
-                    </button>
-                </form>
-            </div>
         </aside>
     </div>
 </div>
