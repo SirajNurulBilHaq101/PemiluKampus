@@ -1,193 +1,216 @@
 <x-layout>
-    <div class="d-flex">
-        {{-- Sidebar --}}
-        <x-aside />
+    <x-aside>
+        {{-- Top Navbar --}}
+        <div class="navbar bg-base-100 border-b border-base-300 px-4 lg:px-6">
+            <label for="sidebar-toggle" class="btn btn-ghost btn-sm btn-square lg:hidden">
+                <i class="bi bi-list text-lg"></i>
+            </label>
+            <div class="flex-1 ml-2">
+                <span class="font-bold text-lg">Dashboard</span>
+            </div>
+            <span class="text-sm text-base-content/60 hidden sm:inline">Selamat datang, {{ Auth::user()->name }}!</span>
+        </div>
 
-        {{-- Main Content --}}
-        <div class="flex-grow-1 bg-light min-vh-100">
-            {{-- Top Navbar --}}
-            <nav class="navbar navbar-light bg-white border-bottom px-4 py-3">
-                <div class="d-lg-none" style="width: 40px;"></div>
-                <span class="navbar-text fw-semibold fs-5">Dashboard</span>
-                <span class="text-muted small d-none d-sm-inline">Selamat datang, {{ Auth::user()->name }}!</span>
-            </nav>
+        {{-- Content --}}
+        <div class="p-4 lg:p-6">
+            @if ($activeEvents->isNotEmpty())
+                <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                    <i class="bi bi-bar-chart-line"></i>
+                    Quick Count — Event Berlangsung
+                </h2>
 
-            {{-- Content --}}
-            <div class="p-3 p-md-4">
-                {{-- Quick Count Section --}}
-                @if($activeEvents->isNotEmpty())
-                    <h5 class="fw-bold mb-3">
-                        <i class="bi bi-bar-chart-line me-2"></i>Quick Count — Event Berlangsung
-                    </h5>
+                @foreach ($quickCounts as $eventId => $data)
+                    @php
+                        $event = $data['event'];
+                        $results = $data['results'];
+                        $totalVotes = $data['totalVotes'];
+                        $hasVoted = $data['hasVoted'];
+                    @endphp
 
-                    @foreach ($quickCounts as $eventId => $data)
-                        @php
-                            $event = $data['event'];
-                            $results = $data['results'];
-                            $totalVotes = $data['totalVotes'];
-                            $hasVoted = $data['hasVoted'];
-                        @endphp
-
-                        <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3">
-                                <div>
-                                    <h6 class="fw-bold mb-0">{{ $event->name }}</h6>
-                                    @if($event->description)
-                                        <small class="text-muted">{{ Str::limit($event->description, 80) }}</small>
+                    <div class="card bg-base-100 shadow-sm mb-5">
+                        <div class="card-body p-0">
+                            {{-- Header --}}
+                            <div class="flex items-center justify-between px-5 py-4 border-b border-base-300">
+                                <div class="min-w-0">
+                                    <h3 class="font-bold text-base">{{ $event->name }}</h3>
+                                    @if ($event->description)
+                                        <p class="text-sm text-base-content/50 truncate">
+                                            {{ Str::limit($event->description, 80) }}</p>
                                     @endif
                                 </div>
-                                <div class="text-end">
-                                    <div class="fw-bold text-primary fs-5">{{ $totalVotes }}</div>
-                                    <small class="text-muted">Total Suara</small>
+                                <div class="text-right shrink-0 ml-4">
+                                    <div class="text-xl font-bold text-primary">{{ $totalVotes }}</div>
+                                    <div class="text-xs text-base-content/50">Total Suara</div>
                                 </div>
                             </div>
-                            <div class="card-body">
-                                @if($results->isEmpty())
-                                    <p class="text-muted text-center mb-0">Belum ada kandidat untuk event ini.</p>
+
+                            {{-- Charts --}}
+                            <div class="p-5">
+                                @if ($results->isEmpty())
+                                    <p class="text-center text-base-content/50 py-4">Belum ada kandidat untuk event ini.
+                                    </p>
                                 @else
-                                    <div class="row align-items-center">
-                                        {{-- Bar Chart --}}
-                                        <div class="col-12 col-lg-7 mb-3 mb-lg-0">
+                                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                                        <div class="lg:col-span-7">
                                             <canvas id="barChart{{ $eventId }}" height="250"></canvas>
                                         </div>
-                                        {{-- Doughnut Chart --}}
-                                        <div class="col-12 col-lg-5">
+                                        <div class="lg:col-span-5">
                                             <canvas id="doughnutChart{{ $eventId }}" height="250"></canvas>
                                         </div>
                                     </div>
                                 @endif
 
-                                {{-- Action --}}
-                                <div class="text-end mt-3 pt-2 border-top">
-                                    @if($hasVoted)
-                                        <span class="badge bg-success me-2"><i class="bi bi-check-circle me-1"></i>Sudah Memilih</span>
-                                    @endif
-                                    <a href="{{ route('vote.show', $event->id) }}" class="btn btn-outline-primary btn-sm">
-                                        <i class="bi bi-box-arrow-in-right me-1"></i> {{ $hasVoted ? 'Lihat Detail' : 'Vote Sekarang' }}
-                                    </a>
-                                </div>
+                                {{-- Action (Mahasiswa only) --}}
+                                @if (Auth::user()->role === 'mahasiswa')
+                                    <div class="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-base-300">
+                                        @if ($hasVoted)
+                                            <span class="badge badge-success gap-1">
+                                                <i class="bi bi-check-circle"></i> Sudah Memilih
+                                            </span>
+                                        @endif
+                                        <a href="{{ route('vote.show', $event->id) }}"
+                                            class="btn btn-primary btn-sm btn-outline">
+                                            <i class="bi bi-box-arrow-in-right"></i>
+                                            {{ $hasVoted ? 'Lihat Detail' : 'Vote Sekarang' }}
+                                        </a>
+                                    </div>
+                                @endif
                             </div>
                         </div>
-                    @endforeach
-                @else
-                    {{-- Welcome Card (no active events) --}}
-                    <div class="card border-0 shadow-sm mt-4">
-                        <div class="card-body p-4">
-                            <h5 class="card-title fw-bold">
-                                <i class="bi bi-emoji-smile me-2"></i>Halo, {{ Auth::user()->name }}!
-                            </h5>
-                            <p class="card-text text-muted mb-0">
-                                Anda login sebagai <strong>{{ ucfirst(Auth::user()->role) }}</strong>. Saat ini belum ada event pemilihan yang sedang berlangsung.
-                            </p>
-                        </div>
                     </div>
-                @endif
-            </div>
+                @endforeach
+            @else
+                {{-- No active events --}}
+                <div class="card bg-base-100 shadow-sm mt-4">
+                    <div class="card-body">
+                        <h3 class="card-title gap-2">
+                            <i class="bi bi-emoji-smile"></i>
+                            Halo, {{ Auth::user()->name }}!
+                        </h3>
+                        <p class="text-base-content/60">
+                            Anda login sebagai <strong>{{ ucfirst(Auth::user()->role) }}</strong>. Saat ini belum ada
+                            event pemilihan yang sedang berlangsung.
+                        </p>
+                    </div>
+                </div>
+            @endif
         </div>
-    </div>
+    </x-aside>
 
     @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-    <script>
-        const chartColors = [
-            '#4e73df', '#1cc88a', '#f6c23e', '#e74a3b', '#36b9cc',
-            '#6f42c1', '#fd7e14', '#20c997', '#6610f2', '#e83e8c'
-        ];
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+        <script>
+            const chartColors = [
+                '#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#06b6d4',
+                '#8b5cf6', '#f97316', '#14b8a6', '#a855f7', '#ec4899'
+            ];
 
-        @foreach ($quickCounts as $eventId => $data)
-            @if($data['results']->isNotEmpty())
-                (function() {
-                    const labels = {!! json_encode($data['results']->map(fn($c) => 'No. ' . $c->candidate_number . ' - ' . $c->name)->values()) !!};
-                    const votes  = {!! json_encode($data['results']->pluck('votes_count')->values()) !!};
-                    const colors = labels.map((_, i) => chartColors[i % chartColors.length]);
+            @foreach ($quickCounts as $eventId => $data)
+                @if ($data['results']->isNotEmpty())
+                    (function() {
+                        const labels = {!! json_encode($data['results']->map(fn($c) => 'No. ' . $c->candidate_number . ' - ' . $c->name)->values()) !!};
+                        const votes = {!! json_encode($data['results']->pluck('votes_count')->values()) !!};
+                        const colors = labels.map((_, i) => chartColors[i % chartColors.length]);
 
-                    // Bar Chart
-                    new Chart(document.getElementById('barChart{{ $eventId }}'), {
-                        type: 'bar',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'Jumlah Suara',
-                                data: votes,
-                                backgroundColor: colors,
-                                borderColor: colors.map(c => c),
-                                borderWidth: 1,
-                                borderRadius: 6,
-                                barPercentage: 0.6,
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function(ctx) {
-                                            const total = votes.reduce((a, b) => a + b, 0);
-                                            const pct = total > 0 ? ((ctx.raw / total) * 100).toFixed(1) : 0;
-                                            return ctx.raw + ' suara (' + pct + '%)';
-                                        }
-                                    }
-                                }
+                        new Chart(document.getElementById('barChart{{ $eventId }}'), {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Jumlah Suara',
+                                    data: votes,
+                                    backgroundColor: colors,
+                                    borderColor: colors,
+                                    borderWidth: 1,
+                                    borderRadius: 6,
+                                    barPercentage: 0.6,
+                                }]
                             },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: { precision: 0 },
-                                    grid: { color: 'rgba(0,0,0,0.05)' }
-                                },
-                                x: {
-                                    grid: { display: false },
-                                    ticks: {
-                                        font: { size: 11 },
-                                        maxRotation: 30,
-                                    }
-                                }
-                            }
-                        }
-                    });
-
-                    // Doughnut Chart
-                    new Chart(document.getElementById('doughnutChart{{ $eventId }}'), {
-                        type: 'doughnut',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                data: votes,
-                                backgroundColor: colors,
-                                borderWidth: 2,
-                                hoverOffset: 8,
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    position: 'bottom',
-                                    labels: {
-                                        padding: 12,
-                                        usePointStyle: true,
-                                        pointStyle: 'circle',
-                                        font: { size: 11 }
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(ctx) {
+                                                const total = votes.reduce((a, b) => a + b, 0);
+                                                const pct = total > 0 ? ((ctx.raw / total) * 100).toFixed(1) :
+                                                0;
+                                                return ctx.raw + ' suara (' + pct + '%)';
+                                            }
+                                        }
                                     }
                                 },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function(ctx) {
-                                            const total = votes.reduce((a, b) => a + b, 0);
-                                            const pct = total > 0 ? ((ctx.raw / total) * 100).toFixed(1) : 0;
-                                            return ctx.label + ': ' + ctx.raw + ' suara (' + pct + '%)';
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            precision: 0
+                                        },
+                                        grid: {
+                                            color: 'rgba(0,0,0,0.04)'
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 11
+                                            },
+                                            maxRotation: 30
                                         }
                                     }
                                 }
                             }
-                        }
-                    });
-                })();
-            @endif
-        @endforeach
-    </script>
+                        });
+
+                        new Chart(document.getElementById('doughnutChart{{ $eventId }}'), {
+                            type: 'doughnut',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    data: votes,
+                                    backgroundColor: colors,
+                                    borderWidth: 2,
+                                    hoverOffset: 8,
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            padding: 12,
+                                            usePointStyle: true,
+                                            pointStyle: 'circle',
+                                            font: {
+                                                size: 11
+                                            }
+                                        }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(ctx) {
+                                                const total = votes.reduce((a, b) => a + b, 0);
+                                                const pct = total > 0 ? ((ctx.raw / total) * 100).toFixed(1) :
+                                                0;
+                                                return ctx.label + ': ' + ctx.raw + ' suara (' + pct + '%)';
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    })();
+                @endif
+            @endforeach
+        </script>
     @endpush
 </x-layout>

@@ -1,52 +1,54 @@
 <x-layout>
-    <div class="d-flex align-items-center justify-content-center min-vh-100 bg-light">
-        <div class="card shadow-sm border-0" style="width: 100%; max-width: 420px;">
-            <div class="card-body p-4">
+    <div class="min-h-screen flex items-center justify-center bg-base-200 px-4">
+        <div class="card bg-base-100 shadow-lg w-full max-w-sm">
+            <div class="card-body">
 
                 {{-- Header --}}
-                <div class="text-center mb-4">
-                    <div class="bg-primary text-white rounded-3 d-inline-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
-                        <i class="bi bi-box-arrow-in-right fs-4"></i>
+                <div class="text-center mb-2">
+                    <div
+                        class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary text-primary-content mb-3">
+                        <i class="bi bi-clipboard2-data text-xl"></i>
                     </div>
-                    <h4 class="fw-bold">Selamat Datang</h4>
-                    <p class="text-muted small">Masuk ke akun Anda untuk melanjutkan</p>
+                    <h2 class="text-xl font-bold">Selamat Datang</h2>
+                    <p class="text-sm text-base-content/60 mt-1">Masuk ke akun Anda untuk melanjutkan</p>
                 </div>
 
                 {{-- Error --}}
                 @if ($errors->any())
-                    <div class="alert alert-danger d-flex align-items-center py-2 small" role="alert">
-                        <i class="bi bi-exclamation-circle me-2"></i>
-                        {{ $errors->first() }}
+                    <div role="alert" class="alert alert-error alert-sm">
+                        <i class="bi bi-exclamation-circle"></i>
+                        <span class="text-sm">{{ $errors->first() }}</span>
                     </div>
                 @endif
 
                 {{-- Form --}}
-                <form method="POST" action="{{ route('login.attempt') }}">
+                <form method="POST" action="{{ route('login.attempt') }}" class="space-y-4 mt-2">
                     @csrf
 
-                    <div class="mb-3">
-                        <label for="email" class="form-label small fw-semibold">Email</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                            <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" placeholder="nama@email.com" required autofocus>
-                        </div>
-                    </div>
+                    <fieldset class="fieldset">
+                        <legend class="fieldset-legend text-sm">Email</legend>
+                        <label class="input w-full">
+                            <i class="bi bi-envelope opacity-50"></i>
+                            <input type="email" name="email" value="{{ old('email') }}"
+                                placeholder="nama@email.com" required autofocus />
+                        </label>
+                    </fieldset>
 
-                    <div class="mb-3">
-                        <label for="password" class="form-label small fw-semibold">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>
-                        </div>
-                    </div>
+                    <fieldset class="fieldset">
+                        <legend class="fieldset-legend text-sm">Password</legend>
+                        <label class="input w-full">
+                            <i class="bi bi-lock opacity-50"></i>
+                            <input type="password" name="password" placeholder="••••••••" required />
+                        </label>
+                    </fieldset>
 
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" name="remember" id="remember">
-                        <label class="form-check-label small" for="remember">Ingat saya</label>
-                    </div>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="remember" class="checkbox checkbox-sm" />
+                        <span class="text-sm">Ingat saya</span>
+                    </label>
 
-                    <button type="submit" class="btn btn-primary w-100">
-                        Masuk <i class="bi bi-arrow-right ms-1"></i>
+                    <button type="submit" class="btn btn-primary w-full">
+                        Masuk <i class="bi bi-arrow-right"></i>
                     </button>
                 </form>
 

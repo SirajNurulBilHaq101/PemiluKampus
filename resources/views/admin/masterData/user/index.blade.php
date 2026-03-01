@@ -1,30 +1,29 @@
 <x-layout>
-    <div class="d-flex">
-        <x-aside />
+    <x-aside>
+        {{-- Top Navbar --}}
+        <div class="navbar bg-base-100 border-b border-base-300 px-4 lg:px-6">
+            <label for="sidebar-toggle" class="btn btn-ghost btn-sm btn-square lg:hidden">
+                <i class="bi bi-list text-lg"></i>
+            </label>
+            <div class="flex-1 ml-2">
+                <span class="font-bold text-lg">Kelola User</span>
+            </div>
+            <span class="text-sm text-base-content/60 hidden sm:inline">Master Data</span>
+        </div>
 
-        <div class="flex-grow-1 bg-light min-vh-100">
-            {{-- Top Navbar --}}
-            <nav class="navbar navbar-light bg-white border-bottom px-4 py-3">
-                <div class="d-lg-none" style="width: 40px;"></div>
-                <span class="navbar-text fw-semibold fs-5">Kelola User</span>
-                <span class="text-muted small d-none d-sm-inline">Master Data</span>
-            </nav>
+        {{-- Content --}}
+        <div class="p-4 lg:p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold">Daftar User</h2>
+            </div>
 
-            {{-- Content --}}
-            <div class="p-3 p-md-4">
-
-                {{-- Header --}}
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold mb-0">Daftar User</h5>
-                </div>
-
-                {{-- Table --}}
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body">
-                        <table id="userTable" class="table table-hover align-middle" style="width:100%">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 50px;">#</th>
+            <div class="card bg-base-100 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="overflow-x-auto">
+                        <table id="userTable" class="table">
+                            <thead>
+                                <tr class="bg-base-200/50">
+                                    <th class="w-12">#</th>
                                     <th>Nama</th>
                                     <th>Email</th>
                                     <th>Role</th>
@@ -33,62 +32,62 @@
                             </thead>
                             <tbody>
                                 @foreach ($users as $i => $user)
-                                    <tr>
-                                        <td class="text-muted">{{ $i + 1 }}</td>
+                                    <tr class="hover:bg-base-200/30">
+                                        <td class="text-base-content/50">{{ $i + 1 }}</td>
                                         <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-2 flex-shrink-0" style="width: 34px; height: 34px;">
-                                                    <i class="bi bi-person-fill"></i>
-                                                </div>
-                                                <span class="fw-semibold">{{ $user->name }}</span>
-                                            </div>
+                                            <span class="font-semibold text-sm">{{ $user->name }}</span>
                                         </td>
-                                        <td class="text-muted">{{ $user->email }}</td>
+                                        <td class="text-base-content/60 text-sm">{{ $user->email }}</td>
                                         <td>
                                             @php
-                                                $badgeClass = match($user->role) {
-                                                    'admin'    => 'bg-danger',
-                                                    'panitia'  => 'bg-warning text-dark',
-                                                    'mahasiswa'=> 'bg-primary',
-                                                    default    => 'bg-secondary',
+                                                $badgeClass = match ($user->role) {
+                                                    'admin' => 'badge-error',
+                                                    'panitia' => 'badge-warning',
+                                                    'mahasiswa' => 'badge-primary',
+                                                    default => 'badge-ghost',
                                                 };
                                             @endphp
-                                            <span class="badge {{ $badgeClass }}">{{ ucfirst($user->role) }}</span>
+                                            <span
+                                                class="badge {{ $badgeClass }} badge-sm">{{ ucfirst($user->role) }}</span>
                                         </td>
-                                        <td class="text-muted small">{{ $user->created_at?->format('d M Y') ?? '-' }}</td>
+                                        <td class="text-base-content/50 text-sm">
+                                            {{ $user->created_at?->format('d M Y') ?? '-' }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
                 </div>
-
             </div>
         </div>
-    </div>
+    </x-aside>
+
+    <x-datatables />
 
     @push('scripts')
-    <script>
-        $(document).ready(function () {
-            $('#userTable').DataTable({
-                language: {
-                    search: "Cari:",
-                    lengthMenu: "Tampilkan _MENU_ data",
-                    info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
-                    infoEmpty: "Tidak ada data",
-                    infoFiltered: "(disaring dari _MAX_ total data)",
-                    zeroRecords: "Tidak ada data yang cocok",
-                    paginate: {
-                        first: "Pertama",
-                        last: "Terakhir",
-                        next: "›",
-                        previous: "‹"
-                    }
-                },
-                pageLength: 10,
-                order: [[0, 'asc']]
+        <script>
+            $(document).ready(function() {
+                $('#userTable').DataTable({
+                    language: {
+                        search: "Cari:",
+                        lengthMenu: "Tampilkan _MENU_ data",
+                        info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
+                        infoEmpty: "Tidak ada data",
+                        infoFiltered: "(disaring dari _MAX_ total data)",
+                        zeroRecords: "Tidak ada data yang cocok",
+                        paginate: {
+                            first: "Pertama",
+                            last: "Terakhir",
+                            next: "›",
+                            previous: "‹"
+                        }
+                    },
+                    pageLength: 10,
+                    order: [
+                        [0, 'asc']
+                    ]
+                });
             });
-        });
-    </script>
+        </script>
     @endpush
 </x-layout>

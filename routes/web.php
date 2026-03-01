@@ -30,12 +30,14 @@ Route::middleware('auth')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | Vote Routes (All authenticated users)
+    | Vote Routes (Mahasiswa only)
     |--------------------------------------------------------------------------
     */
-    Route::get('/vote', [VoteController::class, 'index'])->name('vote.index');
-    Route::get('/vote/{event}', [VoteController::class, 'show'])->name('vote.show');
-    Route::post('/vote/{event}', [VoteController::class, 'store'])->name('vote.store');
+    Route::middleware('role:mahasiswa')->group(function () {
+        Route::get('/vote', [VoteController::class, 'index'])->name('vote.index');
+        Route::get('/vote/{event}', [VoteController::class, 'show'])->name('vote.show');
+        Route::post('/vote/{event}', [VoteController::class, 'store'])->name('vote.store');
+    });
 
     /*
     |--------------------------------------------------------------------------
