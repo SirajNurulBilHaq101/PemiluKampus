@@ -1,0 +1,50 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\User;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+
+class DatabaseSeeder extends Seeder
+{
+    use WithoutModelEvents;
+
+    /**
+     * Seed the application's database.
+     */
+    public function run(): void
+    {
+        // Akun Mahasiswa
+        User::factory()->create([
+            'name'  => 'Mahasiswa User',
+            'email' => 'mhs@mhs.com',
+            'role'  => 'mahasiswa',
+            'password' => Hash::make("mhs"),
+        ]);
+
+        User::factory()->create([
+            'name'  => 'Mahasiswa User 2',
+            'email' => 'mhs2@mhs.com',
+            'role'  => 'mahasiswa',
+            'password' => Hash::make("mhs"),
+        ]);
+
+        // Akun Panitia
+        User::factory()->create([
+            'name'  => 'Panitia User',
+            'email' => 'panitia@panitia.com',
+            'role'  => 'panitia',
+            'password' => Hash::make("panitia"),
+        ]);
+
+        // Akun Admin
+        User::factory()->create([
+            'name'  => 'Admin User',
+            'email' => 'admin@admin.com',
+            'role'  => 'admin',
+            'password' => Hash::make("admin"),
+        ]);
+    }
+}
