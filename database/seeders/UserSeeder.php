@@ -28,6 +28,41 @@ class UserSeeder extends Seeder
             'password' => Hash::make('mhs'),
         ]);
 
+        User::factory()->create([
+            'name'     => 'Ahmad Rifai',
+            'email'    => 'ahmad@mhs.com',
+            'role'     => 'mahasiswa',
+            'password' => Hash::make('mhs'),
+        ]);
+
+        User::factory()->create([
+            'name'     => 'Siti Nurhaliza',
+            'email'    => 'siti@mhs.com',
+            'role'     => 'mahasiswa',
+            'password' => Hash::make('mhs'),
+        ]);
+
+        User::factory()->create([
+            'name'     => 'Budi Santoso',
+            'email'    => 'budi@mhs.com',
+            'role'     => 'mahasiswa',
+            'password' => Hash::make('mhs'),
+        ]);
+
+        User::factory()->create([
+            'name'     => 'Dewi Lestari',
+            'email'    => 'dewi@mhs.com',
+            'role'     => 'mahasiswa',
+            'password' => Hash::make('mhs'),
+        ]);
+
+        User::factory()->create([
+            'name'     => 'Rizky Pratama',
+            'email'    => 'rizky@mhs.com',
+            'role'     => 'mahasiswa',
+            'password' => Hash::make('mhs'),
+        ]);
+
         // Akun Panitia
         User::factory()->create([
             'name'     => 'Panitia User',
