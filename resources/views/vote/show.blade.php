@@ -18,15 +18,26 @@
 
             {{-- Flash Messages --}}
             @if (session('success'))
-                <div role="alert" class="alert alert-success mb-4">
-                    <i class="bi bi-check-circle text-lg"></i>
+                <div role="alert" class="alert alert-success alert-vertical sm:alert-horizontal mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        class="stroke-current h-6 w-6 shrink-0">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                     <span>{{ session('success') }}</span>
+                    <button class="btn btn-sm btn-ghost" onclick="this.parentElement.remove()">✕</button>
                 </div>
             @endif
             @if (session('error'))
-                <div role="alert" class="alert alert-error mb-4">
-                    <i class="bi bi-exclamation-triangle text-lg"></i>
+                <div role="alert" class="alert alert-error alert-vertical sm:alert-horizontal mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        class="stroke-current h-6 w-6 shrink-0">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                        </path>
+                    </svg>
                     <span>{{ session('error') }}</span>
+                    <button class="btn btn-sm btn-ghost" onclick="this.parentElement.remove()">✕</button>
                 </div>
             @endif
 
@@ -103,20 +114,21 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach ($event->candidates as $candidate)
-                        <div class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow h-full">
                             {{-- Photo --}}
                             @if ($candidate->photo)
-                                <figure>
+                                <figure class="bg-base-200 h-56 overflow-hidden">
                                     <img src="{{ asset('storage/' . $candidate->photo) }}"
-                                        alt="Foto {{ $candidate->name }}" class="w-full h-52 object-cover" />
+                                        alt="Foto {{ $candidate->name }}"
+                                        class="w-full h-full object-cover object-center" />
                                 </figure>
                             @else
-                                <figure class="bg-base-200 h-52 flex items-center justify-center">
+                                <figure class="bg-base-200 h-56 flex items-center justify-center">
                                     <i class="bi bi-person text-base-content/20 text-7xl"></i>
                                 </figure>
                             @endif
 
-                            <div class="card-body p-4">
+                            <div class="card-body p-4 flex flex-col">
                                 <div class="flex items-center gap-2 mb-1">
                                     <span
                                         class="badge badge-primary font-bold">{{ $candidate->candidate_number }}</span>
@@ -130,7 +142,8 @@
                                                 <div
                                                     class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-0.5">
                                                     Visi</div>
-                                                <p class="text-sm">{{ $candidate->vision }}</p>
+                                                <p class="text-sm whitespace-pre-line line-clamp-3">
+                                                    {{ $candidate->vision }}</p>
                                             </div>
                                         @endif
                                         @if ($candidate->mission)
@@ -138,16 +151,21 @@
                                                 <div
                                                     class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-0.5">
                                                     Misi</div>
-                                                <p class="text-sm">{{ $candidate->mission }}</p>
+                                                <p class="text-sm whitespace-pre-line line-clamp-4">
+                                                    {{ $candidate->mission }}</p>
                                             </div>
                                         @endif
                                     </div>
                                 @endif
 
-                                <div class="card-actions mt-2">
+                                <div class="card-actions mt-auto pt-2 flex gap-2">
+                                    <a href="{{ route('vote.candidate', [$event->id, $candidate->id]) }}"
+                                        class="btn btn-ghost btn-sm flex-1">
+                                        <i class="bi bi-info-circle"></i> Detail
+                                    </a>
                                     <form method="POST" action="{{ route('vote.store', $event->id) }}"
-                                        onsubmit="return confirm('Apakah Anda yakin memilih {{ $candidate->name }} (No. {{ $candidate->candidate_number }})? Pilihan tidak dapat diubah.')"
-                                        class="w-full">
+                                        onsubmit="event.preventDefault(); showConfirm(this, 'Apakah Anda yakin memilih {{ $candidate->name }} (No. {{ $candidate->candidate_number }})? Pilihan tidak dapat diubah.', 'Konfirmasi Vote')"
+                                        class="flex-1">
                                         @csrf
                                         <input type="hidden" name="candidate_id" value="{{ $candidate->id }}">
                                         <button type="submit" class="btn btn-primary btn-sm w-full">

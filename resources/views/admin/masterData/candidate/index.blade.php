@@ -16,9 +16,14 @@
 
             {{-- Flash Message --}}
             @if (session('success'))
-                <div role="alert" class="alert alert-success mb-4">
-                    <i class="bi bi-check-circle text-lg"></i>
+                <div role="alert" class="alert alert-success alert-vertical sm:alert-horizontal mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        class="stroke-current h-6 w-6 shrink-0">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                     <span>{{ session('success') }}</span>
+                    <button class="btn btn-sm btn-ghost" onclick="this.parentElement.remove()">✕</button>
                 </div>
             @endif
 
@@ -86,7 +91,7 @@
                                                 </button>
                                                 <form method="POST"
                                                     action="{{ route('admin.masterData.candidate.destroy', $candidate->id) }}"
-                                                    onsubmit="return confirm('Yakin hapus kandidat ini?')">
+                                                    onsubmit="event.preventDefault(); showConfirm(this, 'Yakin hapus kandidat ini? Data yang dihapus tidak dapat dikembalikan.', 'Hapus Kandidat')">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button class="btn btn-error btn-xs btn-outline"><i

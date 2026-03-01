@@ -65,4 +65,21 @@ class VoteController extends Controller
         return redirect()->route('vote.show', $eventId)
             ->with('success', 'Suara Anda berhasil dicatat! Terima kasih telah berpartisipasi.');
     }
+
+    /**
+     * Halaman detail kandidat — visi & misi lengkap.
+     */
+    public function candidate(int $eventId, int $candidateId)
+    {
+        $event     = $this->voteService->getEventWithCandidates($eventId);
+        $candidate = $event->candidates->firstWhere('id', $candidateId);
+
+        if (!$candidate) {
+            abort(404);
+        }
+
+        $hasVoted = $this->voteService->hasVoted($eventId, Auth::id());
+
+        return view('vote.candidate', compact('event', 'candidate', 'hasVoted'));
+    }
 }

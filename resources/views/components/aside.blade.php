@@ -35,6 +35,7 @@
                     </li>
 
                     @if ($isMahasiswa)
+                        <li class="menu-title mt-3 text-xs uppercase tracking-wider opacity-50">Suara Anda</li>
                         <li>
                             <a href="{{ route('vote.index') }}"
                                 class="{{ request()->routeIs('vote.*') ? 'active' : '' }}">
@@ -65,6 +66,15 @@
                                 class="{{ request()->routeIs('admin.masterData.candidate.*') ? 'active' : '' }}">
                                 <i class="bi bi-person-badge"></i>
                                 Kelola Kandidat
+                            </a>
+                        </li>
+
+                        <li class="menu-title mt-3 text-xs uppercase tracking-wider opacity-50">Report</li>
+                        <li>
+                            <a href="{{ route('admin.voteLog.index') }}"
+                                class="{{ request()->routeIs('admin.voteLog.*') ? 'active' : '' }}">
+                                <i class="bi bi-journal-text"></i>
+                                Log Suara
                             </a>
                         </li>
                     @endif

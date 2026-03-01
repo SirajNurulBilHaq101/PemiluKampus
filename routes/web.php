@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\CandidateController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\VoteController;
+use App\Http\Controllers\Admin\VoteLogController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,6 +38,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/vote', [VoteController::class, 'index'])->name('vote.index');
         Route::get('/vote/{event}', [VoteController::class, 'show'])->name('vote.show');
         Route::post('/vote/{event}', [VoteController::class, 'store'])->name('vote.store');
+        Route::get('/vote/{event}/candidate/{candidate}', [VoteController::class, 'candidate'])->name('vote.candidate');
     });
 
     /*
@@ -58,5 +60,7 @@ Route::middleware('auth')->group(function () {
             Route::put('/candidate/{id}', [CandidateController::class, 'update'])->name('candidate.update');
             Route::delete('/candidate/{id}', [CandidateController::class, 'destroy'])->name('candidate.destroy');
         });
+
+        Route::get('/vote-log', [VoteLogController::class, 'index'])->name('voteLog.index');
     });
 });
