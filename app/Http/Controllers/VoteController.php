@@ -13,11 +13,11 @@ class VoteController extends Controller
     ) {}
 
     /**
-     * Halaman daftar event aktif.
+     * Halaman daftar event aktif (filtered by prodi).
      */
     public function index()
     {
-        $events = $this->voteService->getActiveEvents();
+        $events = $this->voteService->getActiveEvents(Auth::user());
         return view('vote.index', compact('events'));
     }
 
@@ -26,7 +26,13 @@ class VoteController extends Controller
      */
     public function show(int $eventId)
     {
-        $event      = $this->voteService->getEventWithCandidates($eventId);
+        $event = $this->voteService->getEventWithCandidates($eventId);
+
+        // Cek akses berdasarkan prodi
+        if (!$event->isAccessibleBy(Auth::user())) {
+            abort(403, 'Anda tidak memiliki akses ke event ini.');
+        }
+
         $hasVoted   = $this->voteService->hasVoted($eventId, Auth::id());
         $userVote   = $hasVoted ? $this->voteService->getUserVote($eventId, Auth::id()) : null;
         $results    = $hasVoted ? $this->voteService->getResults($eventId) : null;
@@ -47,6 +53,11 @@ class VoteController extends Controller
         $event = $this->voteService->getEventWithCandidates($eventId);
         if ($event->status !== 'active') {
             return back()->with('error', 'Event ini tidak sedang aktif.');
+        }
+
+        // Cek akses berdasarkan prodi
+        if (!$event->isAccessibleBy(Auth::user())) {
+            return back()->with('error', 'Anda tidak memiliki akses ke event ini.');
         }
 
         // Cek apakah sudah pernah vote
@@ -72,6 +83,12 @@ class VoteController extends Controller
     public function candidate(int $eventId, int $candidateId)
     {
         $event     = $this->voteService->getEventWithCandidates($eventId);
+
+        // Cek akses berdasarkan prodi
+        if (!$event->isAccessibleBy(Auth::user())) {
+            abort(403, 'Anda tidak memiliki akses ke event ini.');
+        }
+
         $candidate = $event->candidates->firstWhere('id', $candidateId);
 
         if (!$candidate) {

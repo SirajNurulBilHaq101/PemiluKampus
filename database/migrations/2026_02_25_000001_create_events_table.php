@@ -18,10 +18,17 @@ return new class extends Migration
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });
+
+        Schema::create('event_study_program', function (Blueprint $table) {
+            $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
+            $table->foreignId('study_program_id')->constrained('study_programs')->cascadeOnDelete();
+            $table->primary(['event_id', 'study_program_id']);
+        });
     }
 
     public function down(): void
     {
+        Schema::dropIfExists('event_study_program');
         Schema::dropIfExists('events');
     }
 };

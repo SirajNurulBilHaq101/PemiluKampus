@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->enum('role', ['mahasiswa', 'panitia', 'admin'])->default('mahasiswa');
+            $table->foreignId('study_program_id')->nullable()->constrained('study_programs')->nullOnDelete();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

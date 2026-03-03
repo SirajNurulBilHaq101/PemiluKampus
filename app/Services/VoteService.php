@@ -4,20 +4,32 @@ namespace App\Services;
 
 use App\Models\Candidate;
 use App\Models\Event;
+use App\Models\User;
 use App\Models\Vote;
 use Illuminate\Database\Eloquent\Collection;
 
 class VoteService
 {
     /**
-     * Ambil semua event yang sedang aktif.
+     * Ambil semua event yang sedang aktif, difilter berdasarkan prodi user.
      */
-    public function getActiveEvents(): Collection
+    public function getActiveEvents(?User $user = null): Collection
     {
-        return Event::where('status', 'active')
+        $query = Event::where('status', 'active')
+            ->with('studyPrograms')
             ->withCount('candidates')
-            ->latest()
-            ->get();
+            ->latest();
+
+        $events = $query->get();
+
+        // Filter berdasarkan prodi user (jika mahasiswa)
+        if ($user && $user->role === 'mahasiswa') {
+            $events = $events->filter(function ($event) use ($user) {
+                return $event->isAccessibleBy($user);
+            })->values();
+        }
+
+        return $events;
     }
 
     /**
@@ -27,7 +39,7 @@ class VoteService
     {
         return Event::with(['candidates' => function ($query) {
             $query->orderBy('candidate_number');
-        }])
+        }, 'studyPrograms'])
         ->withCount('votes')
         ->findOrFail($eventId);
     }

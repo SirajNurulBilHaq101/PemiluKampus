@@ -72,7 +72,6 @@
                                     <th class="w-12">#</th>
                                     <th>Waktu</th>
                                     <th>Event</th>
-                                    <th>Pemilih</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -86,11 +85,10 @@
                                             <span
                                                 class="badge badge-info badge-sm badge-outline">{{ $log->event->name }}</span>
                                         </td>
-                                        <td class="font-semibold text-sm">{{ $log->user->name }}</td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="text-center text-base-content/40 py-8">
+                                        <td colspan="3" class="text-center text-base-content/40 py-8">
                                             Belum ada suara yang masuk.
                                         </td>
                                     </tr>

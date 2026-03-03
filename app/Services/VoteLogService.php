@@ -14,8 +14,8 @@ class VoteLogService
      */
     public function getAllVoteLogs(?int $eventId = null)
     {
-        $query = Vote::select('id', 'event_id', 'user_id', 'created_at')
-            ->with(['event:id,name', 'user:id,name'])
+        $query = Vote::select('id', 'event_id', 'created_at')
+            ->with(['event:id,name'])
             ->latest();
 
         if ($eventId) {

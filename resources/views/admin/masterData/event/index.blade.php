@@ -42,6 +42,7 @@
                                 <tr class="bg-base-200/50">
                                     <th class="w-12">#</th>
                                     <th>Nama Event</th>
+                                    <th>Scope Prodi</th>
                                     <th>Mulai</th>
                                     <th>Selesai</th>
                                     <th>Status</th>
@@ -58,6 +59,18 @@
                                             @if ($event->description)
                                                 <br><span
                                                     class="text-xs text-base-content/50">{{ Str::limit($event->description, 50) }}</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if ($event->studyPrograms->isEmpty())
+                                                <span class="badge badge-ghost badge-sm">Semua Prodi</span>
+                                            @else
+                                                <div class="flex flex-wrap gap-1">
+                                                    @foreach ($event->studyPrograms as $sp)
+                                                        <span
+                                                            class="badge badge-outline badge-sm">{{ $sp->name }}</span>
+                                                    @endforeach
+                                                </div>
                                             @endif
                                         </td>
                                         <td class="text-sm">{{ $event->start_date->format('d M Y H:i') }}</td>
@@ -130,7 +143,7 @@
                                                             required>
                                                     </fieldset>
                                                 </div>
-                                                <fieldset class="fieldset mb-4">
+                                                <fieldset class="fieldset mb-3">
                                                     <legend class="fieldset-legend text-sm">Status</legend>
                                                     <select class="select w-full" name="status" required>
                                                         @foreach (['upcoming', 'active', 'completed', 'cancelled'] as $s)
@@ -139,6 +152,40 @@
                                                                 {{ ucfirst($s) }}</option>
                                                         @endforeach
                                                     </select>
+                                                </fieldset>
+                                                <fieldset class="fieldset mb-4">
+                                                    <legend class="fieldset-legend text-sm">Scope Program Studi</legend>
+                                                    <p class="text-xs text-base-content/50 mb-2">Kosongkan jika semua
+                                                        prodi boleh ikut memilih.</p>
+                                                    <div
+                                                        class="max-h-48 overflow-y-auto border border-base-300 rounded-lg p-3 space-y-3">
+                                                        @foreach ($faculties as $faculty)
+                                                            <div>
+                                                                <div class="flex items-center gap-2 mb-1">
+                                                                    <input type="checkbox"
+                                                                        class="checkbox checkbox-xs faculty-toggle"
+                                                                        data-faculty="edit-{{ $event->id }}-{{ $faculty->id }}"
+                                                                        @if ($event->studyPrograms->pluck('id')->intersect($faculty->studyPrograms->pluck('id'))->count() === $faculty->studyPrograms->count() && $faculty->studyPrograms->count() > 0) checked @endif>
+                                                                    <span
+                                                                        class="font-semibold text-sm">{{ $faculty->name }}</span>
+                                                                </div>
+                                                                <div class="ml-6 space-y-1">
+                                                                    @foreach ($faculty->studyPrograms as $sp)
+                                                                        <label
+                                                                            class="flex items-center gap-2 cursor-pointer">
+                                                                            <input type="checkbox"
+                                                                                class="checkbox checkbox-xs prodi-check edit-{{ $event->id }}-{{ $faculty->id }}"
+                                                                                name="study_program_ids[]"
+                                                                                value="{{ $sp->id }}"
+                                                                                {{ $event->studyPrograms->contains('id', $sp->id) ? 'checked' : '' }}>
+                                                                            <span
+                                                                                class="text-sm">{{ $sp->name }}</span>
+                                                                        </label>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
                                                 </fieldset>
                                                 <div class="flex justify-end gap-2">
                                                     <button type="button" class="btn btn-ghost btn-sm"
@@ -185,7 +232,7 @@
                         <input type="datetime-local" class="input w-full" name="end_date" required>
                     </fieldset>
                 </div>
-                <fieldset class="fieldset mb-4">
+                <fieldset class="fieldset mb-3">
                     <legend class="fieldset-legend text-sm">Status</legend>
                     <select class="select w-full" name="status" required>
                         <option value="upcoming" selected>Upcoming</option>
@@ -193,6 +240,31 @@
                         <option value="completed">Completed</option>
                         <option value="cancelled">Cancelled</option>
                     </select>
+                </fieldset>
+                <fieldset class="fieldset mb-4">
+                    <legend class="fieldset-legend text-sm">Scope Program Studi</legend>
+                    <p class="text-xs text-base-content/50 mb-2">Kosongkan jika semua prodi boleh ikut memilih.</p>
+                    <div class="max-h-48 overflow-y-auto border border-base-300 rounded-lg p-3 space-y-3">
+                        @foreach ($faculties as $faculty)
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <input type="checkbox" class="checkbox checkbox-xs faculty-toggle"
+                                        data-faculty="create-{{ $faculty->id }}">
+                                    <span class="font-semibold text-sm">{{ $faculty->name }}</span>
+                                </div>
+                                <div class="ml-6 space-y-1">
+                                    @foreach ($faculty->studyPrograms as $sp)
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox"
+                                                class="checkbox checkbox-xs prodi-check create-{{ $faculty->id }}"
+                                                name="study_program_ids[]" value="{{ $sp->id }}">
+                                            <span class="text-sm">{{ $sp->name }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
                 </fieldset>
                 <div class="flex justify-end gap-2">
                     <button type="button" class="btn btn-ghost btn-sm"
@@ -226,6 +298,30 @@
                     order: [
                         [0, 'asc']
                     ]
+                });
+
+                // Faculty toggle — check/uncheck semua prodi di bawahnya
+                document.querySelectorAll('.faculty-toggle').forEach(function(toggle) {
+                    toggle.addEventListener('change', function() {
+                        const facultyClass = this.dataset.faculty;
+                        const checkboxes = document.querySelectorAll('.' + facultyClass);
+                        checkboxes.forEach(cb => cb.checked = toggle.checked);
+                    });
+                });
+
+                // Sync faculty toggle saat prodi di-check/uncheck manual
+                document.querySelectorAll('.prodi-check').forEach(function(cb) {
+                    cb.addEventListener('change', function() {
+                        // Extract class name starting with create- or edit-
+                        const classes = Array.from(cb.classList);
+                        const facultyClass = classes.find(c => c.startsWith('create-') || c.startsWith(
+                            'edit-'));
+                        if (!facultyClass) return;
+                        const siblings = document.querySelectorAll('.' + facultyClass);
+                        const allChecked = Array.from(siblings).every(s => s.checked);
+                        const toggle = document.querySelector('[data-faculty="' + facultyClass + '"]');
+                        if (toggle) toggle.checked = allChecked;
+                    });
                 });
             });
         </script>

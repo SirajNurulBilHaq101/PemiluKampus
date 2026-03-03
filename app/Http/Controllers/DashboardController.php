@@ -13,7 +13,7 @@ class DashboardController extends Controller
 
     public function index()
     {
-        $activeEvents = $this->voteService->getActiveEvents();
+        $activeEvents = $this->voteService->getActiveEvents(Auth::user());
 
         // Untuk setiap event aktif, ambil hasil vote per kandidat
         $quickCounts = [];
