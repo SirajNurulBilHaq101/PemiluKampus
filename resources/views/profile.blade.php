@@ -46,11 +46,36 @@
                                 <div class="text-sm font-medium">{{ ucfirst(Auth::user()->role) }}</div>
                             </div>
                         </div>
+                        @if (Auth::user()->studyProgram)
+                            <div class="flex items-center gap-3">
+                                <i class="bi bi-mortarboard text-base-content/40"></i>
+                                <div>
+                                    <div class="text-xs text-base-content/50">Program Studi</div>
+                                    <div class="text-sm font-medium">{{ Auth::user()->studyProgram->name }}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <i class="bi bi-building text-base-content/40"></i>
+                                <div>
+                                    <div class="text-xs text-base-content/50">Fakultas</div>
+                                    <div class="text-sm font-medium">{{ Auth::user()->studyProgram->faculty->name }}
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                        <div class="flex items-center gap-3">
+                            <i class="bi bi-check2-square text-base-content/40"></i>
+                            <div>
+                                <div class="text-xs text-base-content/50">Suara Diberikan</div>
+                                <div class="text-sm font-medium">{{ Auth::user()->votes()->count() }} event</div>
+                            </div>
+                        </div>
                         <div class="flex items-center gap-3">
                             <i class="bi bi-calendar3 text-base-content/40"></i>
                             <div>
                                 <div class="text-xs text-base-content/50">Bergabung Sejak</div>
-                                <div class="text-sm font-medium">{{ Auth::user()->created_at->format('d M Y') }}</div>
+                                <div class="text-sm font-medium">{{ Auth::user()->created_at->format('d M Y, H:i') }}
+                                </div>
                             </div>
                         </div>
                     </div>
