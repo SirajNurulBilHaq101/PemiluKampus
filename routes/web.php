@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\CandidateController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VoteController;
@@ -64,5 +65,6 @@ Route::middleware('auth')->group(function () {
         });
 
         Route::get('/vote-log', [VoteLogController::class, 'index'])->name('voteLog.index');
+        Route::get('/report', [ReportController::class, 'index'])->name('report.index');
     });
 });

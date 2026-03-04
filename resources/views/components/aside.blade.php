@@ -73,6 +73,13 @@
                                 Log Suara
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('admin.report.index') }}"
+                                class="{{ request()->routeIs('admin.report.*') ? 'active' : '' }}">
+                                <i class="bi bi-file-earmark-bar-graph"></i>
+                                Laporan Hasil
+                            </a>
+                        </li>
                     @endif
 
                     <li class="menu-title mt-3 text-xs uppercase tracking-wider opacity-50">Akun</li>
